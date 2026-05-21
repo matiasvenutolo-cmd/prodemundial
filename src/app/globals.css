@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #0a1628;
+  --gold: #d4a017;
+  --pitch: #1e7b22;
+}
+
+body {
+  background-color: var(--primary);
+  color: #e2e8f0;
+  min-height: 100vh;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f2042;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4a017;
+  border-radius: 4px;
+}
+
+/* Inputs numéricos sin flechas */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Glow dorado para elementos destacados */
+.gold-glow {
+  box-shadow: 0 0 15px rgba(212, 160, 23, 0.3);
+}
+
+.card-match {
+  @apply bg-card-bg border border-dark-blue rounded-xl p-4 transition-all duration-200 hover:border-gold/30;
+}
