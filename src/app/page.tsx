@@ -1,174 +1,88 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
-
-export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
-  const supabase = createClient();
-  const router = useRouter();
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) router.push("/dashboard");
-    };
-    checkUser();
-  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
+    e.preventDefault(); setError(""); setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      setError("Email o contraseña incorrectos.");
-    } else {
-      router.push("/dashboard");
-      router.refresh();
-    }
+    if (error) setError("Email o contrasena incorrectos.");
+    else { router.push("/dashboard"); router.refresh(); }
     setLoading(false);
   };
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setLoading(true);
-
-    if (!fullName.trim()) {
-      setError("Ingresá tu nombre completo.");
-      setLoading(false);
-      return;
-    }
-
+    e.preventDefault(); setError(""); setSuccess(""); setLoading(true);
+    if (!fullName.trim()) { setError("Ingresa tu nombre completo."); setLoading(false); return; }
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName },
-      },
+      email, password, options: { data: { full_name: fullName } },
     });
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setSuccess("¡Registro exitoso! Ya podés iniciar sesión.");
-      setIsLogin(true);
-    }
+    if (error) setError(error.message);
+    else { setSuccess("Registro exitoso! Ya podes iniciar sesion."); setIsLogin(true); }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
+    <div className="min-h-screen">
+      <div className="bg-gradient-to-br from-bc-blue to-bc-celeste pt-16 pb-32 px-4">
+        <div className="text-center">
           <div className="text-6xl mb-4">⚽</div>
-          <h1 className="text-3xl font-bold text-gold mb-1">Prode Mundial 2026</h1>
-          <p className="text-gray-400 text-sm">Banco Ciudad</p>
-          <div className="mt-3 flex items-center justify-center gap-2">
-            <span className="text-xs text-gray-500">🇺🇸 🇲🇽 🇨🇦</span>
-            <span className="text-xs text-gray-500">|</span>
-            <span className="text-xs text-gray-500">11 Jun - 19 Jul 2026</span>
-          </div>
+          <h1 className="text-3xl font-bold text-white mb-1">Prode Mundial 2026</h1>
+          <p className="text-white/80 text-sm font-medium">Banco Ciudad</p>
+          <p className="text-white/60 text-xs mt-2">Fase de Grupos | 11 Jun - 27 Jun 2026</p>
         </div>
+      </div>
 
-        {/* Card */}
-        <div className="bg-card-bg border border-dark-blue rounded-2xl p-8 gold-glow">
-          {/* Tabs */}
-          <div className="flex mb-6 bg-primary rounded-lg p-1">
-            <button
-              onClick={() => { setIsLogin(true); setError(""); setSuccess(""); }}
-              className={`flex-1 py-2, px-4 rounded-md text-sm font-medium transition-all py-2 ${
-                isLogin ? "bg-gold text-primary" : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Iniciar Sesión
-            </button>
-            <button
-              onClick={() => { setIsLogin(false); setError(""); setSuccess(""); }}
+      <div className="max-w-md mx-auto px-4 -mt-20">
+        <div className="bg-white rounded-2xl p-8 shadow-xl bc-glow">
+          <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
+            <button onClick={() => { setIsLogin(true); setError(""); setSuccess(""); }}
               className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                !isLogin ? "bg-gold text-primary" : "text-gray-400 hover:text-white"
-              }`}
-            >
+                isLogin ? "bg-bc-blue text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
+              }`}>
+              Iniciar Sesion
+            </button>
+            <button onClick={() => { setIsLogin(false); setError(""); setSuccess(""); }}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                !isLogin ? "bg-bc-blue text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
+              }`}>
               Registrarse
             </button>
           </div>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
-              ❌ {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm">
-              ✅ {success}
-            </div>
-          )}
+          {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">❌ {error}</div>}
+          {success && <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm">✅ {success}</div>}
 
           <form onSubmit={isLogin ? handleLogin : handleRegister} className="space-y-4">
             {!isLogin && (
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Nombre completo</label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Juan Pérez"
-                  className="w-full px-4 py-3 bg-primary border border-dark-blue rounded-lg text-white placeholder:text-gray-600 focus:border-gold focus:outline-none transition-colors"
-                  required
-                />
+                <label className="block text-sm text-gray-600 mb-1">Nombre completo</label>
+                <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Juan Perez"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:border-bc-blue focus:outline-none focus:ring-1 focus:ring-bc-blue/20 transition-colors"
+                  required />
               </div>
             )}
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+              <label className="block text-sm text-gray-600 mb-1">Email</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu.nombre@bancociudad.com.ar"
-                className="w-full px-4 py-3 bg-primary border border-dark-blue rounded-lg text-white placeholder:text-gray-600 focus:border-gold focus:outline-none transition-colors"
-                required
-              />
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:border-bc-blue focus:outline-none focus:ring-1 focus:ring-bc-blue/20 transition-colors"
+                required />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Contraseña</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-                className="w-full px-4 py-3 bg-primary border border-dark-blue rounded-lg text-white placeholder:text-gray-600 focus:border-gold focus:outline-none transition-colors"
-                required
-                minLength={6}
-              />
+              <label className="block text-sm text-gray-600 mb-1">Contrasena</label>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                placeholder="Minimo 6 caracteres"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:border-bc-blue focus:outline-none focus:ring-1 focus:ring-bc-blue/20 transition-colors"
+                required minLength={6} />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-gold text-primary font-bold rounded-lg hover:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? "Cargando..." : isLogin ? "Iniciar Sesión" : "Registrarse"}
+            <button type="submit" disabled={loading}
+              className="w-full py-3 bg-bc-blue text-white font-bold rounded-lg hover:bg-bc-celeste transition-colors disabled:opacity-50">
+              {loading ? "Cargando..." : isLogin ? "Iniciar Sesion" : "Registrarse"}
             </button>
           </form>
         </div>
 
-        {/* Footer */}
         <div className="mt-6 text-center space-y-2">
-          <p className="text-xs text-gray-600">
-            Adiviná los resultados de la fase de grupos y competí con tus compañeros
-          </p>
-          <div className="flex justify-center gap-4 text-xs text-gray-600">
+          <p className="text-xs text-gray-400">Adivina los resultados y competi con tus companeros</p>
+          <div className="flex justify-center gap-4 text-xs text-gray-400">
             <span>🎯 1 pto por acierto</span>
             <span>🔥 3 pts por exacto</span>
           </div>
